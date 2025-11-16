@@ -22,7 +22,7 @@ Se recomienda usar un entorno virtual.
 
 ```powershell
 # 1) Ir al directorio del proyecto
-cd "c:\Users\juanf\Universidad\ProyectoDeteccionExamen"
+cd "\ProyectoDeteccionExamen"
 
 # 2) Crear y activar entorno virtual
 python -m venv .venv

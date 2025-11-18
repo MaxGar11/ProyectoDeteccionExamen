@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from capture_manager import CaptureManager
+from head_tracker import HeadTracker
 
 class EyeProctorApp:
 
@@ -10,9 +11,7 @@ class EyeProctorApp:
 
         # Abstrae el manejo de la cámara y la ventana
         self.cap_manager = CaptureManager()
-
-
-        # self.tracker = HeadTracker()  (Paso 3)
+        self.tracker = HeadTracker()
         # self.logger = TimeLogger()   (Paso 4)
 
     def teclado_handle(self, key):
@@ -41,20 +40,24 @@ class EyeProctorApp:
             print("Error: No se pudo acceder a la cámara.")
             return
 
+        ret, frameFirst = self.cap_manager.read_frame()
+        frameGrayPrev = cv2.cvtColor(frameFirst, cv2.COLOR_BGR2GRAY)
+
         while True:
             # 1. Capturar el frame desde el manager
             ret, frame = self.cap_manager.read_frame()
             if not ret:
                 print("Error: No se pudo leer el frame.")
                 break
-
+            
             # Usamos una copia para dibujar sobre ella sin afectar el original
             display_frame = frame.copy()
+            display_frameGray = cv2.cvtColor(display_frame, cv2.COLOR_BGR2GRAY)
+
+            display_frame = self.tracker.lucasKanade(frameGrayPrev,display_frameGray,display_frame)
 
             # 2. Lógica de procesamiento y visualización
             if self.examen_activo:
-
-
                 cv2.putText(display_frame, "EXAMEN ACTIVO - Monitoreando...",
                             (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
             else:
@@ -64,11 +67,15 @@ class EyeProctorApp:
             # 3. Mostrar el frame usando el manager
             self.cap_manager.show_frame(display_frame)
 
+            #Reiniciar previousFrame
+            frameGrayPrev = display_frameGray.copy()
+
             # 4. Manejar eventos de teclado (simulando botones)
             key = self.cap_manager.check_events()
             if not self.teclado_handle(key):
                 # Si _handle_input devuelve False, rompemos el bucle
                 break
+
 
         self.cap_manager.release()
         print("Aplicación finalizada.")

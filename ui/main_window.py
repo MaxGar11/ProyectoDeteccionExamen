@@ -2,8 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import cv2
 from PIL import Image, ImageTk
-from ProyectoFinal.capture_manager import CaptureManager
-from ProyectoFinal.head_tracker import HeadTracker
+from capture_manager import CaptureManager
+from head_tracker import HeadTracker
 
 
 class MainWindow:

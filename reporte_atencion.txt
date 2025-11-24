@@ -1,0 +1,10 @@
+REPORTE DE ATENCIÓN
+====================
+
+Tiempo total: 11.27s
+
+ATTENTION : 3.90s (34.6%)
+LEFT      : 0.00s (0.0%)
+RIGHT     : 7.38s (65.4%)
+UP        : 0.00s (0.0%)
+DOWN      : 0.00s (0.0%)

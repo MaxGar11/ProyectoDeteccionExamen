@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
 import cv2
+import time
 from PIL import Image, ImageTk
-from ProyectoFinal.capture_manager import CaptureManager
-from ProyectoFinal.head_tracker import HeadTracker
+from capture_manager import CaptureManager
+from head_tracker import HeadTracker
+from attention_reporter import AttentionReporter
 
 
 class MainWindow:
@@ -18,6 +20,7 @@ class MainWindow:
         # Inicializamos Managers y Detectores
         self.cap_manager = CaptureManager()
         self.tracker = HeadTracker()  # Instancia del tracker
+        self.attention = AttentionReporter(threshold_x=40, threshold_y=30)
 
         self._setup_ui()
         self._update_video_loop()
@@ -65,6 +68,8 @@ class MainWindow:
             if self.examen_activo:
                 # 1. Pasamos el frame al tracker para que dibuje el flujo óptico
                 frame = self.tracker.handle_frame(frame)
+                # 2. Actualizamos reporter de atención con puntos actuales
+                self.attention.update(self.tracker.prev_points)
 
                 # 2. Indicador de grabación
                 cv2.circle(frame, (30, 30), 10, (0, 0, 255), -1)
@@ -84,6 +89,7 @@ class MainWindow:
     def iniciar_examen(self):
         self.examen_activo = True
         self.tracker.reset()  # Reiniciar puntos de rastreo
+        self.attention.reset()  # Reiniciar reporter de atención
         self.lbl_status.config(text="EXAMEN EN CURSO - RASTREANDO", fg="#e74c3c")
         self.btn_iniciar.config(state=tk.DISABLED)
         self.btn_detener.config(state=tk.NORMAL)
@@ -93,7 +99,14 @@ class MainWindow:
         self.lbl_status.config(text="EXAMEN FINALIZADO", fg="#2ecc71")
         self.btn_iniciar.config(state=tk.NORMAL)
         self.btn_detener.config(state=tk.DISABLED)
+        # Generar reporte al finalizar
+        reporte_path = self.attention.finalize()
+        print(f"Reporte de atención guardado en: {reporte_path}")
 
     def salir(self):
         self.cap_manager.release()
+        # Finalizar si examen estaba activo y no se detuvo
+        if self.examen_activo:
+            reporte_path = self.attention.finalize()
+            print(f"Reporte de atención guardado en: {reporte_path}")
         self.root.quit()

@@ -3,9 +3,9 @@ from tkinter import ttk
 import cv2
 import time
 from PIL import Image, ImageTk
-from capture_manager import CaptureManager
-from head_tracker import HeadTracker
-from attention_reporter import AttentionReporter
+from ProyectoFinal.capture_manager import CaptureManager
+from ProyectoFinal.head_tracker import HeadTracker
+from ProyectoFinal.attention_reporter import AttentionReporter
 
 
 class MainWindow:
@@ -24,6 +24,7 @@ class MainWindow:
 
         self._setup_ui()
         self._update_video_loop()
+        self._setup_bindings()
 
     def _setup_ui(self):
         self.header_frame = tk.Frame(self.root, bg="#2c3e50", height=60)
@@ -55,6 +56,35 @@ class MainWindow:
         self.btn_salir = tk.Button(self.controls_frame, text="Salir",
                                    bg="#7f8c8d", fg="white", command=self.salir, **btn_style)
         self.btn_salir.grid(row=0, column=2, padx=10)
+
+    def _setup_bindings(self):
+        """Vincula los eventos de sistema operativo a la ventana"""
+        # Detecta cuando el usuario cambia de ventana (Alt+Tab o clic fuera)
+        self.root.bind("<FocusOut>", self.on_focus_out)
+        # Detectar cuando el usuario regresa
+        self.root.bind("<FocusIn>", self.on_focus_in)
+
+    def on_focus_out(self, event):
+        """El usuario salió de la ventana"""
+        # Verificamos que sea la ventana principal la que perdió el foco
+        if self.examen_activo and event.widget == self.root:
+           # print("Usuario cambió de ventana")
+            self.tiempo_foco_perdido = time.time()
+
+    def on_focus_in(self, event):
+        """El usuario regresó a la ventana"""
+        # Verificamos si hay un examen activo y si habíamos perdido el foco
+        if self.examen_activo and self.tiempo_foco_perdido is not None:
+            tiempo_actual = time.time()
+            duracion_fuera = tiempo_actual - self.tiempo_foco_perdido
+
+            # Filtro: Solo registrar si se fue por más de 1 segundo (evita parpadeos)
+            if duracion_fuera > 1.0:
+               # print(f"Usuario regresó. Tiempo fuera: {duracion_fuera:.2f}s")
+                # Registrar en el reportero
+                self.attention.log_window_switch(duracion_fuera)
+
+            self.tiempo_foco_perdido = None
 
     def _update_video_loop(self):
         """Bucle principal de procesamiento de video"""
@@ -90,18 +120,25 @@ class MainWindow:
         self.examen_activo = True
         self.tracker.reset()  # Reiniciar puntos de rastreo
         self.attention.reset()  # Reiniciar reporter de atención
+        self.tiempo_foco_perdido = None
         self.lbl_status.config(text="EXAMEN EN CURSO - RASTREANDO", fg="#e74c3c")
         self.btn_iniciar.config(state=tk.DISABLED)
         self.btn_detener.config(state=tk.NORMAL)
 
     def detener_examen(self):
         self.examen_activo = False
+        self.tiempo_foco_perdido = None
         self.lbl_status.config(text="EXAMEN FINALIZADO", fg="#2ecc71")
+        try:
+            reporte_path = self.attention.finalize()
+            print(f"Reporte guardado en: {reporte_path}")
+            self.lbl_status.config(text=f"FINALIZADO: {reporte_path}", fg="#2ecc71")
+        except Exception as e:
+            print(f"Error al guardar reporte: {e}")
+            self.lbl_status.config(text="ERROR AL GUARDAR REPORTE", fg="red")
         self.btn_iniciar.config(state=tk.NORMAL)
         self.btn_detener.config(state=tk.DISABLED)
-        # Generar reporte al finalizar
-        reporte_path = self.attention.finalize()
-        print(f"Reporte de atención guardado en: {reporte_path}")
+
 
     def salir(self):
         self.cap_manager.release()

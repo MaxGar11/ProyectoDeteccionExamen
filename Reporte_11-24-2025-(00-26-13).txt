@@ -1,0 +1,23 @@
+========================================
+      REPORTE DE ATENCIÓN - EXAMEN      
+========================================
+Fecha: 2025-11-24 00:26:13
+
+RESUMEN GENERAL
+----------------------------------------
+Tiempo Total Examen:   35.58s
+Tiempo de Atención:    25.21s
+Tiempo de NO Atención: 10.36s (29.1%)
+
+EVALUACIÓN AUTOMÁTICA
+----------------------------------------
+>> RESULTADO: Comportamiento dentro de parámetros normales
+
+DETALLE DE COMPORTAMIENTO
+----------------------------------------
+Mirando Pantalla    : 25.21s (70.9%)
+Giro Izquierda      : 0.48s (1.3%)
+Giro Derecha        : 3.27s (9.2%)
+Giro Arriba         : 0.00s (0.0%)
+Giro Abajo          : 0.69s (1.9%)
+Cambio de Ventana   : 5.93s (16.7%) (2 veces)

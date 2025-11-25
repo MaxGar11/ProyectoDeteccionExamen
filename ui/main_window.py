@@ -3,9 +3,9 @@ from tkinter import ttk
 import cv2
 import time
 from PIL import Image, ImageTk
-from ProyectoFinal.capture_manager import CaptureManager
-from ProyectoFinal.head_tracker import HeadTracker
-from ProyectoFinal.attention_reporter import AttentionReporter
+from capture_manager import CaptureManager
+from head_tracker import HeadTracker
+from attention_reporter import AttentionReporter
 
 
 class MainWindow:

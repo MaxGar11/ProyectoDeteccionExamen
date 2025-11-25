@@ -6,8 +6,8 @@ Proyecto de una aplicación de visión por computadora que utiliza la cámara de
 - Universidad: Benemérita Universidad Autónoma de Puebla (BUAP)
 
 ## Nombres 
-- Nombre 1:
-- Nombre 2:
+- Nombre 1: Maximiliano García Rivera   
+- Nombre 2: Juan Felipe Pérez Roldán
 
 ## Objetivo del Proyecto
 Detectar periodos de atención y no atención del alumno durante un examen en línea. Se considera comportamiento sospechoso si el alumno pasa más del 40% del tiempo del examen sin ver la pantalla del examen. Además, la herramienta debe contabilizar cambios de ventana (vía mouse o teclado) como tiempo de no atención.

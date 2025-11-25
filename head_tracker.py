@@ -5,7 +5,7 @@ import cv2
 class HeadTracker:
     def __init__(self):
         # Parámetros para detección de esquinas (Shi-Tomasi)
-        self.feature_params = dict(maxCorners=20,  # Reducimos puntos para enfocarnos solo en ojos
+        self.feature_params = dict(maxCorners=20,  # enfocarnos solo en ojos
                                    qualityLevel=0.3,
                                    minDistance=7,
                                    blockSize=7)
@@ -15,8 +15,6 @@ class HeadTracker:
                               maxLevel=2,
                               criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
 
-        # --- NUEVO: Cargar clasificadores de Haar ---
-        # Nota: cv2.data.haarcascades apunta a la carpeta de instalación de OpenCV
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
